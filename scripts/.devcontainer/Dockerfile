@@ -1,11 +1,15 @@
-FROM python:3.10-bullseye
+FROM python:3.12-bullseye
 
 USER root
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL=/bin/bash
 
 RUN apt-get update && apt-get install -y python3-pip python3-venv && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install sudo wget nano curl passwd git -y && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install sudo wget nano curl passwd git unzip -y && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
 
 ARG USERNAME=dev
 ARG USER_UID=1000
