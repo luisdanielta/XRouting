@@ -1,12 +1,7 @@
 interface LayoutProps {
-    children: any;
+  children: any;
 }
 
-
 export default function Layout({ children }: LayoutProps) {
-    return (
-        <div className="bg-gray-100 min-h-screen">
-            {children}
-        </div>
-    );
+  return <div className="bg-gray-100 min-h-screen">{children}</div>;
 }

@@ -7,6 +7,7 @@
     "dev": "vite --host",
     "build": "tsc -b && vite build --host",
     "lint": "eslint .",
+    "format": "prettier --write .",
     "preview": "vite preview --host"
   },
   "dependencies": {
@@ -14,14 +15,15 @@
     "@tailwindcss/forms": "0.5.9",
     "@tailwindcss/typography": "0.5.15",
     "@tailwindcss/vite": "4.0.9",
+    "jwt-decode": "4.0.0",
+    "prettier": "3.4.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "7.54.2",
     "react-router": "7.2.0",
     "tailwindcss": "4.0.9",
     "tailwindcss-animate": "1.0.7",
-    "zod": "3.24.2",
-    "jwt-decode": "4.0.0"
+    "zod": "3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "9.13.0",

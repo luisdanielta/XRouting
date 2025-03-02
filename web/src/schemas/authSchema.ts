@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const logInSchema = z.object({
   username: z
@@ -12,7 +12,7 @@ export const logInSchema = z.object({
   password: z
     .string()
     .min(8, { message: "La contraseña debe tener al menos 8 caracteres." }),
-})
+});
 
 export const signUpSchema = z.object({
   email: z
@@ -29,4 +29,4 @@ export const signUpSchema = z.object({
   password: z
     .string()
     .min(8, { message: "La contraseña debe tener al menos 8 caracteres." }),
-})
+});
