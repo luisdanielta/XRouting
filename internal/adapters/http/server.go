@@ -57,6 +57,14 @@ func (ea *EchoAdapter) Mount(db *db.DynamoDBClient) {
 	userService := ports.NewUserService(userRepo)
 	userHandler := api.NewUserHandler(userService)
 
+	commentRepo := repositories.NewCommentRepository(db)
+	commentService := ports.NewCommentService(commentRepo)
+	commentHandler := api.NewCommentHandler(commentService)
+
+	componentRepo := repositories.NewComponentRepository(db)
+	componentService := ports.NewComponentService(componentRepo)
+	componentHandler := api.NewComponentHandler(componentService)
+
 	e := ea.echo
 	e.GET("/health", api.GetHealth)
 
@@ -65,4 +73,12 @@ func (ea *EchoAdapter) Mount(db *db.DynamoDBClient) {
 	v1.POST("/user", userHandler.RegisterUser)
 	v1.GET("/user/:id", userHandler.FindUser)
 	v1.DELETE("/user/:id", userHandler.RemoveUser)
+
+	v1.POST("/comment", commentHandler.RegisterComment)
+	v1.GET("/comment/:id", commentHandler.FindComment)
+	v1.DELETE("/comment/:id", commentHandler.RemoveComment)
+
+	v1.POST("/component", componentHandler.RegisterComponent)
+	v1.GET("/component/:id", componentHandler.FindComponent)
+	v1.DELETE("/component/:id", componentHandler.RemoveComponent)
 }
