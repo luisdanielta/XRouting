@@ -30,7 +30,10 @@ export default function SignIn() {
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600 animate-fadeInUp">
-          Don't have an account? <a href="/signup" className="text-blue-500 hover:underline">Sign up</a>
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-500 hover:underline">
+            Sign up
+          </a>
         </p>
       </div>
     </div>
