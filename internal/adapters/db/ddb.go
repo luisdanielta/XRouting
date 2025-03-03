@@ -2,12 +2,10 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"reflect"
-	"xrouting/internal/domain/entities"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
@@ -18,51 +16,16 @@ type DynamoDBEntity interface {
 
 type DynamoDBMapper[T DynamoDBEntity] struct{}
 
+// Utiliza attributevalue.MarshalMap para convertir la entidad a un map compatible con DynamoDB
 func (m *DynamoDBMapper[T]) ToDynamoDBMap(entity T) (map[string]types.AttributeValue, error) {
-	jsonData, err := json.Marshal(entity)
-	if err != nil {
-		return nil, err
-	}
-
-	var dynamoMap map[string]interface{}
-	err = json.Unmarshal(jsonData, &dynamoMap)
-	if err != nil {
-		return nil, err
-	}
-
-	result := make(map[string]types.AttributeValue)
-	for key, value := range dynamoMap {
-		switch v := value.(type) {
-
-		case string:
-			result[key] = &types.AttributeValueMemberS{Value: v}
-		case float64:
-			result[key] = &types.AttributeValueMemberN{Value: fmt.Sprintf("%v", v)}
-		case bool:
-			result[key] = &types.AttributeValueMemberBOOL{Value: v}
-		case entities.Password:
-			result[key] = &types.AttributeValueMemberS{Value: fmt.Sprintf("%v", v)}
-		default:
-			fmt.Printf("Warning: unsupported type %v\n", reflect.TypeOf(value))
-		}
-	}
-
-	return result, nil
+	return attributevalue.MarshalMap(entity)
 }
 
+// Utiliza attributevalue.UnmarshalMap para convertir el map de DynamoDB a la entidad
 func (m *DynamoDBMapper[T]) FromDynamoDBMap(dynamoMap map[string]types.AttributeValue) (T, error) {
 	var entity T
-	jsonData, err := json.Marshal(dynamoMap)
-	if err != nil {
-		return entity, err
-	}
-
-	err = json.Unmarshal(jsonData, &entity)
-	if err != nil {
-		return entity, err
-	}
-
-	return entity, nil
+	err := attributevalue.UnmarshalMap(dynamoMap, &entity)
+	return entity, err
 }
 
 func (m *DynamoDBMapper[T]) ToDynamoDBKeyID(id string) map[string]types.AttributeValue {
