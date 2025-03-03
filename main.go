@@ -6,8 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"xrouting/internal/adapters/db"
 	http "xrouting/internal/adapters/http"
 
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
@@ -17,10 +19,21 @@ func main() {
 	logger := zap.Must(zap.NewProduction()).Sugar()
 	defer logger.Sync()
 
-	e := echo.New()
+	ctx := context.Background()
+
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		logger.Errorw("failed to load config", "error", err)
+	}
+
+	e := echo.New()                       /* Framework Web */
+	dbClient := db.NewDynamoDBClient(cfg) /* DynamoDB */
+	logger.Infow("connected to dynamodb")
 
 	e.Static("/", "public")
 
+	/* Middleware */
+	e.Use(http.DBMiddleware(dbClient))
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			logger.Infow("request", "method", c.Request().Method, "uri", c.Request().RequestURI)
@@ -28,8 +41,8 @@ func main() {
 		}
 	})
 
+	/* Server */
 	srv := http.NewEchoAdapter(":8000", e)
-
 	logger.Infow("starting server")
 
 	go func() {

@@ -25,6 +25,50 @@ func NewDynamoDBClient(cfg aws.Config) *DynamoDBClient {
 	return &DynamoDBClient{client: client}
 }
 
+// EnsureTableExists checks if a DynamoDB table with the specified name exists.
+// If the table does not exist, it creates the table with a predefined schema.
+// If the table already exists, it returns an error.
+//
+// Parameters:
+//
+//	ctx - The context for the operation.
+//	tableName - The name of the DynamoDB table to check or create.
+//
+// Returns:
+//
+//	An error if the table already exists or if there was an error creating the table.
+func (db *DynamoDBClient) EnsureTableExists(ctx context.Context, tableName string) error {
+	_, err := db.client.DescribeTable(ctx, &dynamodb.DescribeTableInput{
+		TableName: &tableName,
+	})
+
+	if err == nil {
+		return fmt.Errorf("table '%s' already exists", tableName)
+	}
+
+	fmt.Printf("Making sure table '%s' exists...\n", tableName)
+	_, err = db.client.CreateTable(ctx, &dynamodb.CreateTableInput{
+		TableName: &tableName,
+		AttributeDefinitions: []types.AttributeDefinition{
+			{AttributeName: aws.String("ID"), AttributeType: types.ScalarAttributeTypeS},
+		},
+		KeySchema: []types.KeySchemaElement{
+			{AttributeName: aws.String("ID"), KeyType: types.KeyTypeHash},
+		},
+		ProvisionedThroughput: &types.ProvisionedThroughput{
+			ReadCapacityUnits:  aws.Int64(1),
+			WriteCapacityUnits: aws.Int64(1),
+		},
+	})
+
+	if err != nil {
+		return fmt.Errorf("error making sure table '%s' exists: %w", tableName, err)
+	}
+
+	fmt.Printf("Table '%s' created successfully\n", tableName)
+	return nil
+}
+
 func (db *DynamoDBClient) PutItem(ctx context.Context, table string, item map[string]types.AttributeValue) error {
 	input := &dynamodb.PutItemInput{
 		TableName: &table,
