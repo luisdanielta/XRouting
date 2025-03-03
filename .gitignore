@@ -23,8 +23,8 @@ go.work.sum
 
 # env file
 .env
-.env.example
 
 tmp/
 
 test.text
+.env.example

@@ -2,6 +2,7 @@ package entities
 
 import (
 	"errors"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -12,21 +13,24 @@ var (
 )
 
 type User struct {
-	ID        int64    `json:"id"`
-	Username  string   `json:"username"`
-	Email     string   `json:"email"`
-	Password  password `json:"-"`
-	CreatedAt string   `json:"created_at"`
-	IsActive  bool     `json:"is_active"`
-	Role      string   `json:"role"`
+	ID       int      `json:"id"`
+	Username string   `json:"username"`
+	Email    string   `json:"email"`
+	Password Password `json:"-"`
+	IsActive bool     `json:"is_active"`
+	Role     string   `json:"role"`
 }
 
-type password struct {
+func (u User) GetID() string {
+	return fmt.Sprintf("%d", u.ID)
+}
+
+type Password struct {
 	text *string
 	hash []byte
 }
 
-func (p *password) Set(text string) error {
+func (p *Password) Set(text string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(text), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -38,6 +42,6 @@ func (p *password) Set(text string) error {
 	return nil
 }
 
-func (p *password) Compare(text string) error {
+func (p *Password) Compare(text string) error {
 	return bcrypt.CompareHashAndPassword(p.hash, []byte(text))
 }

@@ -2,12 +2,74 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"reflect"
+	"xrouting/internal/domain/entities"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
+
+type DynamoDBEntity interface {
+	GetID() string
+}
+
+type DynamoDBMapper[T DynamoDBEntity] struct{}
+
+func (m *DynamoDBMapper[T]) ToDynamoDBMap(entity T) (map[string]types.AttributeValue, error) {
+	jsonData, err := json.Marshal(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	var dynamoMap map[string]interface{}
+	err = json.Unmarshal(jsonData, &dynamoMap)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]types.AttributeValue)
+	for key, value := range dynamoMap {
+		switch v := value.(type) {
+
+		case string:
+			result[key] = &types.AttributeValueMemberS{Value: v}
+		case float64:
+			result[key] = &types.AttributeValueMemberN{Value: fmt.Sprintf("%v", v)}
+		case bool:
+			result[key] = &types.AttributeValueMemberBOOL{Value: v}
+		case entities.Password:
+			result[key] = &types.AttributeValueMemberS{Value: fmt.Sprintf("%v", v)}
+		default:
+			fmt.Printf("Warning: unsupported type %v\n", reflect.TypeOf(value))
+		}
+	}
+
+	return result, nil
+}
+
+func (m *DynamoDBMapper[T]) FromDynamoDBMap(dynamoMap map[string]types.AttributeValue) (T, error) {
+	var entity T
+	jsonData, err := json.Marshal(dynamoMap)
+	if err != nil {
+		return entity, err
+	}
+
+	err = json.Unmarshal(jsonData, &entity)
+	if err != nil {
+		return entity, err
+	}
+
+	return entity, nil
+}
+
+func (m *DynamoDBMapper[T]) ToDynamoDBKeyID(id string) map[string]types.AttributeValue {
+	return map[string]types.AttributeValue{
+		"ID": &types.AttributeValueMemberS{Value: id},
+	}
+}
 
 type DynamoDBRepository interface {
 	PutItem(ctx context.Context, table string, item map[string]types.AttributeValue) error
@@ -23,50 +85,6 @@ type DynamoDBClient struct {
 func NewDynamoDBClient(cfg aws.Config) *DynamoDBClient {
 	client := dynamodb.NewFromConfig(cfg)
 	return &DynamoDBClient{client: client}
-}
-
-// EnsureTableExists checks if a DynamoDB table with the specified name exists.
-// If the table does not exist, it creates the table with a predefined schema.
-// If the table already exists, it returns an error.
-//
-// Parameters:
-//
-//	ctx - The context for the operation.
-//	tableName - The name of the DynamoDB table to check or create.
-//
-// Returns:
-//
-//	An error if the table already exists or if there was an error creating the table.
-func (db *DynamoDBClient) EnsureTableExists(ctx context.Context, tableName string) error {
-	_, err := db.client.DescribeTable(ctx, &dynamodb.DescribeTableInput{
-		TableName: &tableName,
-	})
-
-	if err == nil {
-		return fmt.Errorf("table '%s' already exists", tableName)
-	}
-
-	fmt.Printf("Making sure table '%s' exists...\n", tableName)
-	_, err = db.client.CreateTable(ctx, &dynamodb.CreateTableInput{
-		TableName: &tableName,
-		AttributeDefinitions: []types.AttributeDefinition{
-			{AttributeName: aws.String("ID"), AttributeType: types.ScalarAttributeTypeS},
-		},
-		KeySchema: []types.KeySchemaElement{
-			{AttributeName: aws.String("ID"), KeyType: types.KeyTypeHash},
-		},
-		ProvisionedThroughput: &types.ProvisionedThroughput{
-			ReadCapacityUnits:  aws.Int64(1),
-			WriteCapacityUnits: aws.Int64(1),
-		},
-	})
-
-	if err != nil {
-		return fmt.Errorf("error making sure table '%s' exists: %w", tableName, err)
-	}
-
-	fmt.Printf("Table '%s' created successfully\n", tableName)
-	return nil
 }
 
 func (db *DynamoDBClient) PutItem(ctx context.Context, table string, item map[string]types.AttributeValue) error {
@@ -143,4 +161,8 @@ func (s *ItemService) UpdateItem(ctx context.Context, table string, key map[stri
 
 func (s *ItemService) DeleteItem(ctx context.Context, table string, key map[string]types.AttributeValue) error {
 	return s.repository.DeleteItem(ctx, table, key)
+}
+
+func (db *DynamoDBClient) GetDBSession() string {
+	return db.client.Options().Region
 }
