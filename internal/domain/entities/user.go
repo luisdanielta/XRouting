@@ -2,7 +2,6 @@ package entities
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
@@ -15,12 +14,12 @@ var (
 )
 
 type User struct {
-	ID       int      `dynamodbav:"id" json:"id"`
-	Username string   `dynamodbav:"username" json:"username"`
-	Email    string   `dynamodbav:"email" json:"email"`
-	Password Password `dynamodbav:"password" json:"-"`
-	IsActive bool     `dynamodbav:"is_active" json:"is_active"`
-	Role     string   `dynamodbav:"role" json:"role"`
+	ID       string `dynamodbav:"id" json:"id,omitempty"`
+	Username string `dynamodbav:"username" json:"username"`
+	Email    string `dynamodbav:"email" json:"email"`
+	Password string `dynamodbav:"password" json:"password,omitempty"`
+	IsActive bool   `dynamodbav:"is_active" json:"is_active"`
+	Role     string `dynamodbav:"role" json:"role"`
 }
 
 // Marshal converts the User struct into a DynamoDB attribute map.
@@ -30,10 +29,6 @@ func (u *User) Marshal() (map[string]types.AttributeValue, error) {
 
 func (u *User) Unmarshal(m map[string]types.AttributeValue) error {
 	return attributevalue.UnmarshalMap(m, u)
-}
-
-func (u User) GetID() string {
-	return fmt.Sprintf("%d", u.ID)
 }
 
 type Password struct {

@@ -1,12 +1,23 @@
 package api
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"net/http"
 	"xrouting/internal/domain/entities"
 	"xrouting/internal/ports"
 
 	"github.com/labstack/echo/v4"
 )
+
+func GenerateRandomUID() string {
+	bytes := make([]byte, 16)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(bytes)
+}
 
 type UserHandler struct {
 	userService ports.UserService
@@ -17,13 +28,15 @@ func NewUserHandler(userService ports.UserService) *UserHandler {
 }
 
 func (h *UserHandler) RegisterUser(c echo.Context) error {
-
 	user := new(entities.User)
 	if err := c.Bind(user); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
 
-	tableName := "UsersTable"
+	uid := GenerateRandomUID()
+	user.ID = uid
+
+	tableName := "users"
 
 	err := h.userService.RegisterUser(c.Request().Context(), tableName, user)
 	if err != nil {
@@ -35,7 +48,7 @@ func (h *UserHandler) RegisterUser(c echo.Context) error {
 
 func (h *UserHandler) FindUser(c echo.Context) error {
 	userID := c.Param("id")
-	tableName := "UsersTable"
+	tableName := "users"
 
 	user, err := h.userService.FindUser(c.Request().Context(), tableName, userID)
 	if err != nil {
@@ -47,7 +60,7 @@ func (h *UserHandler) FindUser(c echo.Context) error {
 
 func (h *UserHandler) RemoveUser(c echo.Context) error {
 	userID := c.Param("id")
-	tableName := "UsersTable"
+	tableName := "users"
 
 	err := h.userService.RemoveUser(c.Request().Context(), tableName, userID)
 	if err != nil {
