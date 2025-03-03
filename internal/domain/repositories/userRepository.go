@@ -15,20 +15,18 @@ type UserRepository interface {
 }
 
 type userRepository struct {
-	dynamo db.DynamoDBRepository
+	dynamo *db.DynamoDBClient
 }
 
-func NewUserRepository(dynamo db.DynamoDBRepository) UserRepository {
+// Constructor con inyección de dependencias
+func NewUserRepository(dynamo *db.DynamoDBClient) UserRepository {
 	return &userRepository{dynamo: dynamo}
 }
 
 func (r *userRepository) CreateUser(ctx context.Context, tableName string, user *entities.User) error {
-	if err := r.dynamo.PutItem(ctx, tableName, user); err != nil {
-		return err
-	}
-
-	return nil
+	return r.dynamo.PutItem(ctx, tableName, user)
 }
+
 func (r *userRepository) GetUser(ctx context.Context, tableName string, userID string) (*entities.User, error) {
 	user := &entities.User{}
 
@@ -42,6 +40,7 @@ func (r *userRepository) GetUser(ctx context.Context, tableName string, userID s
 
 	return user, nil
 }
+
 func (r *userRepository) DeleteUser(ctx context.Context, tableName string, userID string) error {
 	return r.dynamo.DeleteItem(ctx, tableName, map[string]types.AttributeValue{
 		"id": &types.AttributeValueMemberS{Value: userID},

@@ -43,7 +43,11 @@ func main() {
 
 	/* Server */
 	srv := http.NewEchoAdapter(":8000", e)
-	logger.Infow("starting server")
+	logger.Infow("starting server", "addr", srv.Addr())
+
+	/* Mount */
+	srv.Mount(dbClient)
+	logger.Infow("mounted routes")
 
 	go func() {
 		if err := srv.Start(); err != nil {

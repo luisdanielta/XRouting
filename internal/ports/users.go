@@ -23,6 +23,7 @@ func NewUserService(userRepo repositories.UserRepository) UserService {
 func (s *userService) RegisterUser(ctx context.Context, tableName string, user *entities.User) error {
 	return s.userRepo.CreateUser(ctx, tableName, user)
 }
+
 func (s *userService) FindUser(ctx context.Context, tableName string, userID string) (*entities.User, error) {
 	return s.userRepo.GetUser(ctx, tableName, userID)
 }

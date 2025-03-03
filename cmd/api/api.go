@@ -4,8 +4,6 @@ import (
 	"time"
 	"xrouting/internal/auth"
 	"xrouting/internal/ratelimiter"
-
-	"github.com/labstack/echo/v4"
 )
 
 type Application struct {
@@ -45,11 +43,4 @@ type dbConfig struct {
 	maxOpenConns int
 	maxIdleConns int
 	maxIdleTime  string
-}
-
-func (app *Application) Mount(e *echo.Echo) {
-	e.GET("/health", app.getHealth)
-
-	/* v1 */
-	// v1 := e.Group("/api/v1")
 }
