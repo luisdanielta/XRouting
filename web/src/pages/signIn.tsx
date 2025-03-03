@@ -1,6 +1,21 @@
+import Layout from "@/components/layout";
+
 export default function SignIn() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
+    <Layout>
+      <main className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 via-blue-50 to-green-50">
+        <section className="shadow-xl rounded-xl p-8 sm:p-12 w-full max-w-md">
+          
+        </section>
+      </main>
+    </Layout>
+  );
+}
+
+
+
+/* 
+ <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
       <div className="bg-white shadow-xl rounded-xl p-8 sm:p-12 w-full max-w-md container cq-container">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 animate-fadeInDown">
           Sign In
@@ -37,5 +52,5 @@ export default function SignIn() {
         </p>
       </div>
     </div>
-  );
-}
+
+*/

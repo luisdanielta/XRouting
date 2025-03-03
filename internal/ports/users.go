@@ -2,40 +2,31 @@ package ports
 
 import (
 	"context"
-	"fmt"
-	"xrouting/internal/adapters/db"
 	"xrouting/internal/domain/entities"
+	"xrouting/internal/domain/repositories"
 )
 
-type UserService struct {
-	itemService *db.ItemService
-	mapper      db.DynamoDBMapper[entities.User]
+type UserService interface {
+	RegisterUser(ctx context.Context, tableName string, user *entities.User) error
+	FindUser(ctx context.Context, tableName string, userID string) (*entities.User, error)
+	RemoveUser(ctx context.Context, tableName string, userID string) error
 }
 
-func NewUserService(itemService *db.ItemService) *UserService {
-	return &UserService{
-		itemService: itemService,
-		mapper:      db.DynamoDBMapper[entities.User]{},
-	}
+type userService struct {
+	userRepo repositories.UserRepository
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user entities.User) error {
-	item, err := s.mapper.ToDynamoDBMap(user)
-	if err != nil {
-		return fmt.Errorf("error converting user to DynamoDB: %w", err)
-	}
-	return s.itemService.CreateItem(ctx, "users", item)
+func NewUserService(userRepo repositories.UserRepository) UserService {
+	return &userService{userRepo: userRepo}
 }
 
-func (s *UserService) GetUser(ctx context.Context, id string) (*entities.User, error) {
-	key := s.mapper.ToDynamoDBKeyID(id)
-	item, err := s.itemService.ReadItem(ctx, "users", key)
-	if err != nil {
-		return nil, fmt.Errorf("error getting user: %w", err)
-	}
-	user, err := s.mapper.FromDynamoDBMap(item)
-	if err != nil {
-		return nil, fmt.Errorf("error converting user from DynamoDB: %w", err)
-	}
-	return &user, nil
+func (s *userService) RegisterUser(ctx context.Context, tableName string, user *entities.User) error {
+	return s.userRepo.CreateUser(ctx, tableName, user)
+}
+func (s *userService) FindUser(ctx context.Context, tableName string, userID string) (*entities.User, error) {
+	return s.userRepo.GetUser(ctx, tableName, userID)
+}
+
+func (s *userService) RemoveUser(ctx context.Context, tableName string, userID string) error {
+	return s.userRepo.DeleteUser(ctx, tableName, userID)
 }
