@@ -8,6 +8,7 @@ class ComponentType(str, Enum):
     engine = 'engine'
     ship = 'ship'
     launchpad = 'launchpad'
+    rocket = 'rocket'
 
 class ComponentStatus(str, Enum):
     active = 'active'
