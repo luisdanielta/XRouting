@@ -1,16 +1,15 @@
-package http
+package api
 
 import (
 	"time"
 	"xrouting/internal/auth"
 	"xrouting/internal/ratelimiter"
 
-	"go.uber.org/zap"
+	"github.com/labstack/echo/v4"
 )
 
-type application struct {
+type Application struct {
 	config        config
-	logger        *zap.SugaredLogger
 	authenticator auth.Authenticator
 	rateLimiter   ratelimiter.Limiter
 }
@@ -46,4 +45,11 @@ type dbConfig struct {
 	maxOpenConns int
 	maxIdleConns int
 	maxIdleTime  string
+}
+
+func (app *Application) Mount(e *echo.Echo) {
+	e.GET("/health", app.getHealth)
+
+	/* v1 */
+	// v1 := e.Group("/api/v1")
 }
