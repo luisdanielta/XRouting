@@ -1,5 +1,5 @@
 from core.entities.subComponent import SubComponent
-from adapters.repositories.baseRepository import BaseRepository
+from core.repositories.baseRepository import BaseRepository
 
 class SubComponentRepository(BaseRepository[SubComponent]):
     def __init__(self, regionName="us-east-1"):
