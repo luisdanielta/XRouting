@@ -16,13 +16,13 @@ export default function SignIn() {
               <label htmlFor="email" className="">
                 Email
               </label>
-              <Input type="email" onChange={(e) => setEmail(e.target.value)} />
+              <Input type="email" />
             </div>
             <div>
               <label htmlFor="password" className="">
                 Password
               </label>
-              <Input type="password" onChange={(e) => setPassword(e.target.value)} />
+              <Input type="password" />
             </div>
             <PrimaryButton text="Sign In" />
           </form>

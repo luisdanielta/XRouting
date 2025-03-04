@@ -31,11 +31,6 @@ func main() {
 	dbClient := db.NewDynamoDBClient(cfg) /* DynamoDB */
 	logger.Infow("connected to dynamodb")
 
-	e.Static("/", "public")
-	e.GET("/*", func(c echo.Context) error {
-		return c.File("public/index.html")
-	})
-
 	/* Middleware */
 	e.Use(http.DBMiddleware(dbClient))
 	e.Use(midd.CORS())

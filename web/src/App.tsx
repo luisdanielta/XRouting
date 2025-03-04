@@ -16,8 +16,6 @@ import {
   Analytic,
   ComponentStatusData,
   CostSuccessRateData,
-  HistoricalSuccessFailureData,
-  LaunchCostDistributionData,
   MaintenanceFrequencyData,
   Metric,
   MissionsPerComponentData,
