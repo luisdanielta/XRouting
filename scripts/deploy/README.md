@@ -58,7 +58,7 @@ aws lambda create-function \
   --zip-file fileb://lambda_package.zip
 ```
 
-This command creates an AWS Lambda function named updateSpaceXData. It assigns the LambdaExecutionRole with the necessary permissions, and sets main.lambda_handler as the entry point. Additionally, it uploads the packaged code from lambda_package.zip, making the function ready for execution in AWS.
+This command creates an AWS Lambda function named `updateSpaceXData`. It assigns the `LambdaExecutionRole` with the necessary permissions, and sets `main.lambda_handler` as the entry point. Additionally, it uploads the packaged code from `lambda_package.zip`, making the function ready for execution in AWS.
 
 **Get YOUR_ACCOUNT_ID**
 ```bash
