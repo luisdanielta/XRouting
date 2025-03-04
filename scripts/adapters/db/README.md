@@ -64,8 +64,12 @@ The `DynamoDBManager` class initializes an AWS DynamoDB client using boto3, whic
 DynamoDB tables need a primary key for uniquely identifying each item. This includes:
 
 Partition Key (Primary Key) – Uniquely identifies each record.
+
 (Optional) Sort Key – Used for composite primary keys.
-The table creation method in DynamoDBManager defines these keys dynamically using the schemas defined on the [Entities](../core/entities/). Each Entity represents a table on DynamoDB
+
+The table creation method in DynamoDBManager defines these keys dynamically using the schemas defined on the [Entities](../../core/entities/). 
+
+Each Entity represents a table on DynamoDB
 
 ---
 **How to Create the Tables**
