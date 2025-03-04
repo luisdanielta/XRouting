@@ -18,7 +18,7 @@ export class ApiClient extends HttpClient {
    * Initializes the HttpClient with the base URL for the API.
    */
   private constructor() {
-    super("http://localhost:9050/v1/api");
+    super("http://0.0.0.0:8000/api/v1"); /* change to your backend url */
   }
 
   /**
