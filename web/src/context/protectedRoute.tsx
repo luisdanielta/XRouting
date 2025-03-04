@@ -1,3 +1,4 @@
+/*
 import React from "react";
 import { Navigate, Outlet } from "react-router";
 import { UseUserContext } from "@/hooks/useUserContext";
@@ -9,7 +10,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   allowedRoles,
 }) => {
-  /*
+
   const { user, isAuthenticated } = useUserContext();
   if (!isAuthenticated) {
     return <Navigate to="/sign/in" replace />;
@@ -18,7 +19,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (user?.role && !allowedRoles.includes(user.role)) {
     return <Navigate to="/sign/in" replace />;
   }
-  */
+  
 
   return <Outlet />;
 };
+*/

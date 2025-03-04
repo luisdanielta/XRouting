@@ -5,7 +5,7 @@ import { createContext, useState } from "react";
 interface UserContextType {
   user: User | null; // Stores the authenticated user or null if not logged in
   isAuthenticated: boolean; // Indicates if the user is logged in
-  signIn: (userData: User, token: string) => void; // Logs in the user
+  signIn: (userData: User) => void; // Logs in the user
   signOut: () => void; // Logs out the user
 }
 
@@ -22,7 +22,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const isAuthenticated = !!user;
 
   // Function to log in the user
-  const signIn = (userData: User, token: string) => {
+  const signIn = (userData: User) => {
     setUser(userData);
   };
 

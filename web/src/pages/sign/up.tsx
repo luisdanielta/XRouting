@@ -16,13 +16,13 @@ export default function SignUp() {
               <label htmlFor="email" className="">
                 Email
               </label>
-              <Input id="email" type="email" required />
+              <Input type="email" />
             </div>
             <div>
               <label htmlFor="password" className="">
                 Password
               </label>
-              <Input id="password" type="password" required />
+              <Input type="password" />
             </div>
             <PrimaryButton text="Sign Up" />
           </form>
