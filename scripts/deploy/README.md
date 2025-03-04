@@ -17,16 +17,16 @@ Enter your AWS Access Key ID, Secret Access Key, Region.
 
 If you don’t have an AWS user for using credentials, go to the AWS IAM Console:
 
-Create a new user
-- Click Add user → Set a username (e.g., dev-user).
-- Choose Access Key – Programmatic access.
+- Create a new user
+* Click Add user → Set a username (e.g., dev-user).
+* Choose Access Key – Programmatic access.
 
-Assign permissions:
-- Select Attach policies directly.
-- Add the following policy: IAMFullAccess (if full access is needed but I personally do not recommend) or create a custom policy (see next step).
+- Assign permissions:
+* Select Attach policies directly.
+* Add the following policy: IAMFullAccess (if full access is needed but I personally do not recommend) or create a custom policy (see next step).
 
-Download credentials:
-- Save the Access Key ID and Secret Access Key.
+- Download credentials:
+* Save the Access Key ID and Secret Access Key.
 
 #### 2. IAM Role with Lambda Execution Permissions.
 
