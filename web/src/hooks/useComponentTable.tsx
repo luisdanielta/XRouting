@@ -22,7 +22,7 @@ export const useComponentTable = (data: Component[]) => {
     getPaginationRowModel: getPaginationRowModel(),
     state: { sorting, pagination: { pageIndex, pageSize } },
     onSortingChange: setSorting,
-    onPaginationChange: updater => {
+    onPaginationChange: (updater) => {
       if (typeof updater === "function") {
         setPageIndex(updater({ pageIndex, pageSize }).pageIndex);
       } else {

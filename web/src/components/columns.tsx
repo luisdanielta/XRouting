@@ -36,4 +36,4 @@ export const MaintenanceColumns: ColumnDef<Maintenance>[] = [
     header: "Date",
     enableSorting: true,
   },
-]
+];

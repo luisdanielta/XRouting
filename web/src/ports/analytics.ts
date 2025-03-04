@@ -1,24 +1,24 @@
 import { ApiClient } from "@/api/apiClient";
-import { Maintenance, MaintenanceSchema } from "@/domain/entities/maintenance";
+import { Analytic, AnalyticSchema } from "@/domain/entities/analytic";
 
-export class MaintenanceService {
+export class AnalyticService {
   private apiClient = ApiClient.getInstance();
-  private baseEndpoint = "/maintenance";
+  private baseEndpoint = "/analytic";
 
-  async create(maintenance: Maintenance): Promise<Maintenance> {
-    const validatedMaintenance = MaintenanceSchema.parse(maintenance);
+  async create(analytic: Analytic): Promise<Analytic> {
+    const validatedAnalytic = AnalyticSchema.parse(analytic);
     return this.apiClient
-      .request<Maintenance>(this.baseEndpoint, {
+      .request<Analytic>(this.baseEndpoint, {
         method: "POST",
-        body: JSON.stringify(validatedMaintenance),
+        body: JSON.stringify(validatedAnalytic),
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => res.data);
   }
 
-  async findById(id: string): Promise<Maintenance | null> {
+  async findById(id: string): Promise<Analytic | null> {
     return this.apiClient
-      .request<Maintenance>(`${this.baseEndpoint}/${id}`, {
+      .request<Analytic>(`${this.baseEndpoint}/${id}`, {
         method: "GET",
       })
       .then((res) => res.data)
@@ -27,10 +27,10 @@ export class MaintenanceService {
 
   async update(
     id: string,
-    updateData: Partial<Maintenance>,
-  ): Promise<Maintenance | null> {
+    updateData: Partial<Analytic>,
+  ): Promise<Analytic | null> {
     return this.apiClient
-      .request<Maintenance>(`${this.baseEndpoint}/${id}`, {
+      .request<Analytic>(`${this.baseEndpoint}/${id}`, {
         method: "PUT",
         body: JSON.stringify(updateData),
         headers: { "Content-Type": "application/json" },
@@ -48,9 +48,9 @@ export class MaintenanceService {
       .catch(() => false);
   }
 
-  async findAll(): Promise<Maintenance[]> {
+  async findAll(): Promise<Analytic[]> {
     return this.apiClient
-      .request<Maintenance[]>(this.baseEndpoint + "s", {
+      .request<Analytic[]>(this.baseEndpoint + "s", {
         method: "GET",
       })
       .then((res) => res.data);

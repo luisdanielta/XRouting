@@ -1,4 +1,4 @@
-import { flexRender,  } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import PrimaryButton from "../ui/button/primaryButton";
 import { Key } from "react";
 
@@ -7,39 +7,65 @@ interface TableProps {
 }
 
 export const Table: React.FC<TableProps> = ({ table }) => {
-
   return (
     <div className="overflow-hidden rounded-sm border border-gray-200 shadow-md shadow-gray-100">
       <table className="w-full table-fixed border-collapse">
         <thead>
-          {table.getHeaderGroups().map((headerGroup: { id: Key | null | undefined; headers: any[]; }) => (
-            <tr key={headerGroup.id} className="bg-gradient-to-r from-blue-400 via-green-300 to-green-400 text-white">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="px-4 py-3 text-left font-semibold uppercase tracking-wider cursor-pointer hover:bg-green-500 transition-all duration-200 whitespace-nowrap w-1/5"
-                  onClick={header.column.getToggleSortingHandler()}
+          {table
+            .getHeaderGroups()
+            .map(
+              (headerGroup: { id: Key | null | undefined; headers: any[] }) => (
+                <tr
+                  key={headerGroup.id}
+                  className="bg-gradient-to-r from-blue-400 via-green-300 to-green-400 text-white"
                 >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                  {header.column.getIsSorted() === "asc" ? " 🔼" : header.column.getIsSorted() === "desc" ? " 🔽" : ""}
-                </th>
-              ))}
-            </tr>
-          ))}
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-4 py-3 text-left font-semibold uppercase tracking-wider cursor-pointer hover:bg-green-500 transition-all duration-200 whitespace-nowrap w-1/5"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                      {header.column.getIsSorted() === "asc"
+                        ? " 🔼"
+                        : header.column.getIsSorted() === "desc"
+                          ? " 🔽"
+                          : ""}
+                    </th>
+                  ))}
+                </tr>
+              ),
+            )}
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {table.getRowModel().rows.map((row: { id: Key | null | undefined; getVisibleCells: () => any[]; }) => (
-            <tr key={row.id} className="hover:bg-gray-100 transition-colors">
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="px-4 py-3 truncate whitespace-nowrap w-1/5"
+          {table
+            .getRowModel()
+            .rows.map(
+              (row: {
+                id: Key | null | undefined;
+                getVisibleCells: () => any[];
+              }) => (
+                <tr
+                  key={row.id}
+                  className="hover:bg-gray-100 transition-colors"
                 >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="px-4 py-3 truncate whitespace-nowrap w-1/5"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ),
+            )}
         </tbody>
       </table>
 
