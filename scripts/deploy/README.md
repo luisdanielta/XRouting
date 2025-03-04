@@ -65,5 +65,19 @@ This command creates an AWS Lambda function named `updateSpaceXData`. It assigns
 aws sts get-caller-identity --query Account --output text
 ```
 
+## 4. Test the Lambda Function
 
+**Invoke Lambda with a Test Event**
+```bash
+aws lambda invoke \
+  --function-name MyLambdaFunction \
+  --payload '{ "test": "data" }' \
+  response.json
+cat response.json
+```
+
+**View Logs in Real-Time**
+```bash
+aws logs tail /aws/lambda/MyLambdaFunction --follow
+```
 
