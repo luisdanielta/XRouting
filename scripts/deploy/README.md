@@ -17,18 +17,18 @@ Enter your AWS Access Key ID, Secret Access Key, Region.
 
 If you don’t have an AWS user for using credentials, go to the AWS IAM Console:
 
-- #### Create a new user
+- **Create a new user**
 * Click Add user → Set a username (e.g., dev-user).
 * Choose Access Key – Programmatic access.
 
-- #### Assign permissions
+- **Assign permissions**
 * Select Attach policies directly.
 * Add the following policy: IAMFullAccess (if full access is needed but I personally do not recommend) or create a custom policy (see next step).
 
-- #### Download credentials
+- **Download credentials**
 * Save the Access Key ID and Secret Access Key.
 
-#### 1.2. IAM Role with Lambda Execution Permissions.
+### 1.2. IAM Role with Lambda Execution Permissions.
 
 ```bash
 aws iam create-role --role-name LambdaExecutionRole --assume-role-policy-document file://trust-policy.json
@@ -40,10 +40,10 @@ aws iam attach-role-policy --role-name LambdaExecutionRole --policy-arn arn:aws:
 aws iam attach-role-policy --role-name LambdaExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 ```
 
-#### 2. Package the Lambda Function
+## 2. Package the Lambda Function
 Run the `deploy_lambda.sh` to install dependencies and package the Lambda function, you can also follow the step by step commands.
 
-#### 3. Deploy the Lambda Function
+## 3. Deploy the Lambda Function
 
 ```bash
 aws lambda create-function \
