@@ -40,3 +40,6 @@ def lambda_handler(event: Dict[str, str], context: object) -> Dict[str, str | in
     components, comments, subComponents, analytics = transformData(spaceXData)
     return saveToDynamoDB(components, comments, subComponents, analytics)
 ```
+
+
+

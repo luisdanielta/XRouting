@@ -70,14 +70,50 @@ aws sts get-caller-identity --query Account --output text
 **Invoke Lambda with a Test Event**
 ```bash
 aws lambda invoke \
-  --function-name MyLambdaFunction \
-  --payload '{ "test": "data" }' \
-  response.json
+  --function-name updateSpaceXData \
+    response.json
 cat response.json
 ```
 
 **View Logs in Real-Time**
 ```bash
-aws logs tail /aws/lambda/MyLambdaFunction --follow
+aws logs tail /aws/lambda/updateSpaceXData --follow
 ```
 
+## 5. Schedule Execution Every 6 Hours
+
+To automatically execute the Lambda function every **6 hours**, we use **Amazon EventBridge (CloudWatch Events)**.
+
+### 5.1 Create an EventBridge Rule
+
+Run the following command to create a rule that triggers every 6 hours:
+
+```bash
+aws events put-rule \
+    --name lambda-scheduled-execution \
+    --schedule-expression "rate(6 hours)"
+```
+This creates a rule named lambda-scheduled-execution that runs on a fixed interval of 6 hours.
+
+### 5.2 Assign the Rule to Lambda
+Finally, associate the rule with the Lambda function:
+
+```bash
+aws events put-targets \
+    --rule lambda-scheduled-execution \
+    --targets "Id"="1","Arn"="arn:aws:lambda:YOUR_ACCOUNT_ID:function:updateSpaceXData"
+```
+
+### 5.3 Grant Permissions to EventBridge
+Ensure that EventBridge can invoke the Lambda function by adding the correct permissions:
+
+```bash
+aws lambda add-permission \
+    --function-name updateSpaceXData \
+    --statement-id eventbridge-invoke \
+    --action "lambda:InvokeFunction" \
+    --principal events.amazonaws.com \
+    --source-arn arn:aws:events:YOUR_ACCOUNT_ID:rule/lambda-scheduled-execution
+```
+
+Replace `YOUR_ACCOUNT_ID` with your actual AWS Account ID when necessary.
