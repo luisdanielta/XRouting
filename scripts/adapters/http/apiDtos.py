@@ -71,4 +71,5 @@ class LaunchDTO(BaseModel):
     ships: List[str]
     success: Optional[bool]
     details: Optional[str]
+    date_utc: Optional[str]
 

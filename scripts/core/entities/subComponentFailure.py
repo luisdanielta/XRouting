@@ -5,9 +5,9 @@ from datetime import datetime
 from typing import Optional
 
 class FailureType(str, Enum):
-    wear = "desgaste"
-    overheating = "sobrecalentamiento"
-    vibrations = "vibraciones"
+    wear = "wear"
+    overheating = "overheating"
+    vibrations = "vibrations"
 
 class FailureStatus(str, Enum):
     pending = "pending"

@@ -1,13 +1,29 @@
 import random
 import uuid
 from ports.componentServices import getCurrentTimestamp
-from typing import List
+from typing import List, Optional
 from core.entities.comment import Comment
+from core.entities.user import UserRole
 from adapters.http.apiDtos import LaunchDTO
+from core.repositories.userRepository import UserRepository
 
-def detailToComments(launch: LaunchDTO, userId="admin") -> List[Comment]:
+def getAdminUserId() -> str:
+    """
+    Fetches a user with the 'admin' role from the UserRepository.
+
+    Returns:
+        str: The ID of a randomly selected user with the 'admin' role, or "admin" if no such user exists.
+    """
+    """Fetches a user with 'admin' role from the UserRepository."""
+    userRepo = UserRepository()
+    users = userRepo.getAll() 
+    adminUsers = [user for user in users if user["role"] == UserRole.admin.value]
+    return random.choice(adminUsers)["id"] if adminUsers else "admin"
+
+def detailToComments(launch: LaunchDTO) -> List[Comment]:
+    """Generates comments related to a launch, assigning a dynamic admin user."""
     details = launch.details.lower() if launch.details else ""
-
+    userId = getAdminUserId()
     keywords = {
         "rocket": [launch.rocket] if launch.rocket else [],
         "launchpad": [launch.launchpad] if launch.launchpad else [],
@@ -15,7 +31,6 @@ def detailToComments(launch: LaunchDTO, userId="admin") -> List[Comment]:
         "capsule": launch.capsules or [],
         "ship": launch.ships or [],
     }
-
     comments = [
         Comment(
             id=str(uuid.uuid4()),
