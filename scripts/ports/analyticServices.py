@@ -2,7 +2,8 @@ from collections import defaultdict
 from decimal import Decimal
 from typing import List, Dict, Union
 from adapters.http.apiDtos import RocketDTO, LaunchDTO, LaunchpadDTO
-from core.entities.component import Component, ComponentStatus
+from core.entities.maintenance import Maintenance
+from core.entities.component import Component, ComponentStatus, ComponentType
 from core.entities.analytic import Analytic
 from ports.componentServices import getCurrentTimestamp
 from datetime import datetime
@@ -260,3 +261,39 @@ def generateRegionSuccessMetric(launches: List[LaunchDTO], launchpads: List[Laun
     )
 
     return analytic
+
+
+def generateMaintenanceFrequencyMetric(maintenances: List[dict], components: List[Component]) -> Analytic[int]:
+    """
+    Generates a metric showing the frequency of maintenance events per component type.
+
+    Args:
+        maintenances (List[dict]): List of maintenance records retrieved as dictionaries.
+        components (List[Component]): List of components.
+
+    Returns:
+        Analytic[int]: Maintenance frequency per component type.
+    """
+
+    maintenanceObjects: List[Maintenance] = [Maintenance(**m) if isinstance(m, dict) else m for m in maintenances]
+    componentTypeMap: Dict[str, str] = {comp.componentId: comp.type for comp in components}
+    maintenanceCountMap: Dict[str, int] = defaultdict(int)
+
+    for maintenance in maintenanceObjects:
+        print(f"Processed Maintenance: {maintenance}")
+        componentType = componentTypeMap.get(maintenance.componentId, "Unknown")
+        maintenanceCountMap[componentType] += 1
+
+    data = [{"componentType": compType, "maintenanceCount": count} for compType, count in maintenanceCountMap.items()]
+
+    analytic = Analytic[Union[ComponentType, int]](
+        id="maintenanceFrequency",
+        metricName="Maintenance Frequency per Component Type",
+        description="This metric tracks how frequently each type of component undergoes maintenance, "
+                    "helping to identify which components require the most servicing.",
+        data=data,
+        updatedAt=getCurrentTimestamp()
+    )
+
+    return analytic
+
