@@ -1,5 +1,5 @@
 from core.entities.analytic import Analytic
-from adapters.repositories.baseRepository import BaseRepository
+from core.repositories.baseRepository import BaseRepository
 
 class AnalyticRepository(BaseRepository[Analytic]):
     def __init__(self, regionName="us-east-1"):
@@ -7,6 +7,6 @@ class AnalyticRepository(BaseRepository[Analytic]):
 
     def createTableIfNotExists(self):
         super().createTableIfNotExists(
-            keySchema=[{"AttributeName": "analyticId", "KeyType": "HASH"}],
-            attributeDefinitions=[{"AttributeName": "analyticId", "AttributeType": "S"}]
+            keySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
+            attributeDefinitions=[{"AttributeName": "id", "AttributeType": "S"}]
         )

@@ -7,7 +7,7 @@ class UserRole(str, Enum):
     viewer = "viewer"
 
 class User(BaseModel):
-    id: int
+    id: str = Field(..., description="ID of the user")
     name: str = Field(..., description="Name of the user")
     email: str = Field(..., description="Email of the user")
     password: str = Field(..., description="Password of the user")

@@ -15,5 +15,5 @@ dynamic = ["version"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["core*", "utils*", "app*", "adapters*", "ports*"]
+include = ["core*", "utils*", "app*", "adapters*", "ports*", "migration*"]
 namespaces = false
