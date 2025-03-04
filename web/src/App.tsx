@@ -11,6 +11,8 @@ import { useComponentTable } from "./hooks/useComponentTable";
 import { Table } from "./components/table";
 import { useMaintenanceTable } from "./hooks/useMaintenanceTable";
 
+import Plot from 'react-plotly.js';
+
 const componentService = new ComponentService();
 const maintenanceService = new MaintenanceService();
 
@@ -38,6 +40,40 @@ export default function App() {
       <Layout>
         <NavBar />
         <main className="container mx-auto p-4">
+          <section className="grid grid-cols-4 gap-4">
+            <article className="col-span-2">
+              <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-blue-500 via-blue-200 to-green-500 bg-clip-text text-transparent">
+                Components
+              </h1>
+              <Plot
+                data={[
+                  {
+                    x: components.map((component) => component.status),
+                    y: components.map((component) => component.type),
+                    type: 'bar',
+                  },
+                ]}
+                layout={{ width: 450, title: 'Component Maintenance Count' }}
+              />
+            </article>
+            <article className="col-span-2">
+              <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-blue-500 via-blue-200 to-green-500 bg-clip-text text-transparent">
+                Maintenances
+              </h1>
+              <Plot
+                data={[
+                  {
+                    x: maintenances.map((maintenance) => maintenance.date),
+                    y: maintenances.map((maintenance) => maintenance.cost),
+                    mode: 'markers',
+                    type: 'scatter',
+                  },
+                ]}
+                layout={{ width: 450, title: 'Maintenance Count' }}
+              />
+            </article>
+          </section>
+
           <section className="flex flex-row gap-4">
             <article>
               <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-blue-500 via-blue-200 to-green-500 bg-clip-text text-transparent">
