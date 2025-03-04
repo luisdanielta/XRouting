@@ -43,8 +43,43 @@ def lambda_handler(event: Dict[str, str], context: object) -> Dict[str, str | in
 
 ## 5. Running the Code Locally 🏃
 
+**Prerequisites**
+    - Python enviroment configured (with previous steps)
+    - Your AWS user is authenticated and has the necessary permissions.
+    - You have configured the required AWS IAM policies for your user:
+        - AmazonDynamoDBFullAccess
+        - AWSLambdaBasicExecutionRole
 
+**1. Create DynamoDB Tables**
+Before running the Lambda function, you need to create the necessary DynamoDB tables. This can be done by running the migration script:
+```python
+python migration/create_tables.py
+```
 
+**2. Run the Lambda Function Locally**
+Once the tables are set up, you can run the Lambda function directly, `python main.py`. This will:
+
+    - Fetch data from the SpaceX API.
+    - Process and transform the data.
+    - Insert it into DynamoDB.
+    - Return a JSON response with the status code.
+
+After execution, you should see a response similar to:
+
+```python
+{
+    "statusCode": 200,
+    "body": {
+        "message": "Data successfully saved to DynamoDB.",
+        "componentsSaved": 150,
+        "subComponentsSaved": 75,
+        "commentsSaved": 200,
+        "analyticsUpdated": 10
+    }
+}
+```
+
+If any issue occurs, check your AWS authentication and DynamoDB setup.
 
 This version ensures that you have clear steps to:
 1. Authenticate with AWS.
