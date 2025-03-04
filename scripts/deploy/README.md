@@ -6,7 +6,7 @@ This guide covers the prerequisites, Lambda function creation, packaging, deploy
 
 Before deploying, ensure you have the following:
 
-1. AWS CLI Installed & Configured.
+#### 1. AWS CLI Installed & Configured.
 
 ```bash
 curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
@@ -28,7 +28,7 @@ Assign permissions:
 Download credentials:
 - Save the Access Key ID and Secret Access Key.
 
-2. IAM Role with Lambda Execution Permissions.
+#### 2. IAM Role with Lambda Execution Permissions.
 
 ```bash
 aws iam create-role --role-name LambdaExecutionRole --assume-role-policy-document file://trust-policy.json
