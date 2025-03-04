@@ -42,7 +42,8 @@ This will set up:
 ## Documentation Structure
 Each module has its own README with detailed instructions:
 
-- Lambda Function → [Lambda Function Overview](scripts/README.md) 
+- Lambda Function → [Lambda Function Overview](scripts/README.md)
+- DB setup  →  [DynamoDB config](scripts/adapters/db/README.md)
 - Deployment Setup → [Lambda Deploy](scripts/deploy/README.md) / [Web Deploy](dist/README.md)  
 - Web App (Go) → [Web App](web/README.md)
 
