@@ -6,7 +6,7 @@ export default function SignIn() {
   return (
     <Layout>
       <main className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 via-blue-50 to-green-50">
-        <section className="shadow rounded-sm p-8 sm:p-12 w-full max-w-md bg-gray-50 mx-4">
+        <section className="shadow rounded-md p-8 sm:p-12 w-full max-w-md bg-gray-50 mx-4">
           <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-blue-500 via-blue-200 to-green-500 bg-clip-text text-transparent">
             Sign In
           </h1>

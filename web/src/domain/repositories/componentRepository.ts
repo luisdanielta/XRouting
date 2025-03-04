@@ -13,13 +13,16 @@ export class ComponentRepository {
     return this.components.get(id) || null;
   }
 
-  async update(id: string, updateData: Partial<Component>): Promise<Component | null> {
+  async update(
+    id: string,
+    updateData: Partial<Component>,
+  ): Promise<Component | null> {
     if (!this.components.has(id)) return null;
-    
+
     const existingComponent = this.components.get(id)!;
     const updatedComponent = { ...existingComponent, ...updateData };
     const validatedComponent = ComponentSchema.parse(updatedComponent);
-    
+
     this.components.set(id, validatedComponent);
     return validatedComponent;
   }
