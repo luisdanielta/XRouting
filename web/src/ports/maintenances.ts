@@ -1,24 +1,24 @@
 import { ApiClient } from "@/api/apiClient";
-import { Component, ComponentSchema } from "@/domain/entities/component";
+import { Maintenance, MaintenanceSchema } from "@/domain/entities/maintenance";
 
-export class ComponentService {
+export class MaintenanceService {
   private apiClient = ApiClient.getInstance();
-  private baseEndpoint = "/component";
+  private baseEndpoint = "/maintenance";
 
-  async create(component: Component): Promise<Component> {
-    const validatedComponent = ComponentSchema.parse(component);
+  async create(maintenance: Maintenance): Promise<Maintenance> {
+    const validatedMaintenance = MaintenanceSchema.parse(maintenance);
     return this.apiClient
-      .request<Component>(this.baseEndpoint, {
+      .request<Maintenance>(this.baseEndpoint, {
         method: "POST",
-        body: JSON.stringify(validatedComponent),
+        body: JSON.stringify(validatedMaintenance),
         headers: { "Content-Type": "application/json" },
       })
       .then((res) => res.data);
   }
 
-  async findById(id: string): Promise<Component | null> {
+  async findById(id: string): Promise<Maintenance | null> {
     return this.apiClient
-      .request<Component>(`${this.baseEndpoint}/${id}`, {
+      .request<Maintenance>(`${this.baseEndpoint}/${id}`, {
         method: "GET",
       })
       .then((res) => res.data)
@@ -27,10 +27,10 @@ export class ComponentService {
 
   async update(
     id: string,
-    updateData: Partial<Component>,
-  ): Promise<Component | null> {
+    updateData: Partial<Maintenance>,
+  ): Promise<Maintenance | null> {
     return this.apiClient
-      .request<Component>(`${this.baseEndpoint}/${id}`, {
+      .request<Maintenance>(`${this.baseEndpoint}/${id}`, {
         method: "PUT",
         body: JSON.stringify(updateData),
         headers: { "Content-Type": "application/json" },
@@ -48,9 +48,9 @@ export class ComponentService {
       .catch(() => false);
   }
 
-  async findAll(): Promise<Component[]> {
+  async findAll(): Promise<Maintenance[]> {
     return this.apiClient
-      .request<Component[]>(this.baseEndpoint + "s", {
+      .request<Maintenance[]>(this.baseEndpoint + "s", {
         method: "GET",
       })
       .then((res) => res.data);

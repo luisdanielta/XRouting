@@ -1,6 +1,11 @@
 package entities
 
-import "time"
+import (
+	"time"
+
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+)
 
 // FailureRiskLevel defines levels of failure risks
 type FailureRiskLevel string
@@ -30,4 +35,12 @@ type Maintenance struct {
 	Description           *string            `json:"description,omitempty" dynamodbav:"description,omitempty"`
 	NextMaintenance       *time.Time         `json:"nextMaintenance,omitempty" dynamodbav:"nextMaintenance,omitempty"`
 	FailurePrediction     *FailurePrediction `json:"failurePrediction,omitempty" dynamodbav:"failurePrediction,omitempty"`
+}
+
+func (u *Maintenance) Marshal() (map[string]types.AttributeValue, error) {
+	return attributevalue.MarshalMap(u)
+}
+
+func (u *Maintenance) Unmarshal(m map[string]types.AttributeValue) error {
+	return attributevalue.UnmarshalMap(m, u)
 }
