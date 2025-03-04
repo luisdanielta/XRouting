@@ -1,52 +1,33 @@
-import { createContext, useContext, useState } from "react";
-import { ApiClient } from "@/api/apiClient";
-import { TokenStorage } from "@/utils/tokenStorage";
+import React, { createContext, useContext, useState } from "react";
+import { AuthService } from "@/ports/authServices";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  signIn: (username: string, password: string) => Promise<void>;
-  signOut: () => void;
-  signUp: (username: string, email: string, password: string) => Promise<void>;
+  role: "user" | "admin" | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    !!TokenStorage.getToken(),
-  );
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(AuthService.prototype.isAuthenticated());
+  const [role, setRole] = useState<"user" | "admin" | null>(AuthService.prototype.getUserRole());
 
-  const signIn = async (username: string, password: string) => {
-    const response = await ApiClient.getInstance().request<{ token: string }>(
-      "/sign/in",
-      {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-
-    if (response.data?.token) {
-      TokenStorage.setToken(response.data.token);
-      setIsAuthenticated(true);
-    }
+  const login = async (email: string, password: string) => {
+    await AuthService.prototype.signIn(email, password);
+    setIsAuthenticated(true);
+    setRole(AuthService.prototype.getUserRole());
   };
 
-  const signUp = async (username: string, email: string, password: string) => {
-    await ApiClient.getInstance().request("/sign/up", {
-      method: "POST",
-      body: JSON.stringify({ username, email, password }),
-      headers: { "Content-Type": "application/json" },
-    });
-  };
-
-  const signOut = () => {
-    TokenStorage.clearToken();
+  const logout = () => {
+    AuthService.prototype.signOut();
     setIsAuthenticated(false);
+    setRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, signUp }}>
+    <AuthContext.Provider value={{ isAuthenticated, role, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -54,24 +35,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
   return context;
 };
-
-/*
-    useEffect(() => {
-     
-      const validateToken = async () => {
-        const token = TokenStorage.getToken();
-        if (token) {
-          try {
-            await ApiClient.getInstance().request('/auth/validate');
-            setIsAuthenticated(true);
-          } catch (error) {
-            TokenStorage.clearToken();
-            setIsAuthenticated(false);
-          }
-        }
-      };
-      validateToken();
-    }, []); */

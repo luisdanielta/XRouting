@@ -8,7 +8,7 @@ interface ButtonBaseProps {
 
 const ButtonBase: React.FC<ButtonBaseProps> = ({
   text,
-  type = "button",
+  type = "submit",
   className = "",
   onClick,
   disabled = false,
