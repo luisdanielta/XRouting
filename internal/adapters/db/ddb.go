@@ -2,130 +2,114 @@ package db
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-type DynamoDBEntity interface {
-	GetID() string
+// Marshaler defines how to convert an entity to/from a DynamoDB attribute map.
+type Marshaler interface {
+	Marshal() (map[string]types.AttributeValue, error)
+	Unmarshal(map[string]types.AttributeValue) error
 }
 
-type DynamoDBMapper[T DynamoDBEntity] struct{}
-
-// Utiliza attributevalue.MarshalMap para convertir la entidad a un map compatible con DynamoDB
-func (m *DynamoDBMapper[T]) ToDynamoDBMap(entity T) (map[string]types.AttributeValue, error) {
-	return attributevalue.MarshalMap(entity)
-}
-
-// Utiliza attributevalue.UnmarshalMap para convertir el map de DynamoDB a la entidad
-func (m *DynamoDBMapper[T]) FromDynamoDBMap(dynamoMap map[string]types.AttributeValue) (T, error) {
-	var entity T
-	err := attributevalue.UnmarshalMap(dynamoMap, &entity)
-	return entity, err
-}
-
-func (m *DynamoDBMapper[T]) ToDynamoDBKeyID(id string) map[string]types.AttributeValue {
-	return map[string]types.AttributeValue{
-		"ID": &types.AttributeValueMemberS{Value: id},
-	}
-}
-
+// DynamoDBRepository defines basic CRUD operations for objects
+// that implement Marshaler.
 type DynamoDBRepository interface {
-	PutItem(ctx context.Context, table string, item map[string]types.AttributeValue) error
-	GetItem(ctx context.Context, table string, key map[string]types.AttributeValue) (map[string]types.AttributeValue, error)
-	UpdateItem(ctx context.Context, table string, key map[string]types.AttributeValue, updateExpression string, expressionAttributeValues map[string]types.AttributeValue) error
-	DeleteItem(ctx context.Context, table string, key map[string]types.AttributeValue) error
+	PutItem(ctx context.Context, tableName string, item Marshaler) error
+	GetItem(ctx context.Context, tableName string, key map[string]types.AttributeValue, out Marshaler) error
+	DeleteItem(ctx context.Context, tableName string, key map[string]types.AttributeValue) error
+	UpdateItem(
+		ctx context.Context,
+		tableName string,
+		key map[string]types.AttributeValue,
+		updateExpression string,
+		expressionValues map[string]types.AttributeValue,
+	) error
+	ScanTable(ctx context.Context, tableName string) ([]map[string]types.AttributeValue, error)
 }
 
+// DynamoDBClient implements the DynamoDBRepository interface.
+// It requires an AWS config to create the service client.
 type DynamoDBClient struct {
 	client *dynamodb.Client
 }
 
+// NewDynamoDBClient creates a new DynamoDB client.
 func NewDynamoDBClient(cfg aws.Config) *DynamoDBClient {
-	client := dynamodb.NewFromConfig(cfg)
-	return &DynamoDBClient{client: client}
+	return &DynamoDBClient{
+		client: dynamodb.NewFromConfig(cfg),
+	}
 }
 
-func (db *DynamoDBClient) PutItem(ctx context.Context, table string, item map[string]types.AttributeValue) error {
-	input := &dynamodb.PutItemInput{
-		TableName: &table,
-		Item:      item,
-	}
-	_, err := db.client.PutItem(ctx, input)
+func (c *DynamoDBClient) PutItem(ctx context.Context, tableName string, item Marshaler) error {
+	attrMap, err := item.Marshal()
 	if err != nil {
-		return fmt.Errorf("error al insertar item: %w", err)
+		return err
 	}
-	return nil
+	_, err = c.client.PutItem(ctx, &dynamodb.PutItemInput{
+		TableName: &tableName,
+		Item:      attrMap,
+	})
+	return err
 }
 
-func (db *DynamoDBClient) GetItem(ctx context.Context, table string, key map[string]types.AttributeValue) (map[string]types.AttributeValue, error) {
-	input := &dynamodb.GetItemInput{
-		TableName: &table,
+func (c *DynamoDBClient) GetItem(
+	ctx context.Context,
+	tableName string,
+	key map[string]types.AttributeValue,
+	out Marshaler,
+) error {
+	resp, err := c.client.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: &tableName,
 		Key:       key,
-	}
-	result, err := db.client.GetItem(ctx, input)
+	})
 	if err != nil {
-		return nil, fmt.Errorf("error al obtener item: %w", err)
+		return err
 	}
-	return result.Item, nil
+	return out.Unmarshal(resp.Item)
 }
 
-func (db *DynamoDBClient) UpdateItem(ctx context.Context, table string, key map[string]types.AttributeValue, updateExpression string, expressionAttributeValues map[string]types.AttributeValue) error {
-	input := &dynamodb.UpdateItemInput{
-		TableName:                 &table,
+func (c *DynamoDBClient) DeleteItem(
+	ctx context.Context,
+	tableName string,
+	key map[string]types.AttributeValue,
+) error {
+	_, err := c.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
+		TableName: &tableName,
+		Key:       key,
+	})
+	return err
+}
+
+func (c *DynamoDBClient) UpdateItem(
+	ctx context.Context,
+	tableName string,
+	key map[string]types.AttributeValue,
+	updateExpression string,
+	expressionValues map[string]types.AttributeValue,
+) error {
+	_, err := c.client.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		TableName:                 &tableName,
 		Key:                       key,
 		UpdateExpression:          &updateExpression,
-		ExpressionAttributeValues: expressionAttributeValues,
+		ExpressionAttributeValues: expressionValues,
+	})
+	return err
+}
+
+func (c *DynamoDBClient) ScanTable(ctx context.Context, tableName string) ([]map[string]types.AttributeValue, error) {
+	var items []map[string]types.AttributeValue
+	input := &dynamodb.ScanInput{
+		TableName: &tableName,
 	}
-	_, err := db.client.UpdateItem(ctx, input)
+
+	result, err := c.client.Scan(ctx, input)
 	if err != nil {
-		return fmt.Errorf("error al actualizar item: %w", err)
+		return nil, err
 	}
-	return nil
-}
 
-func (db *DynamoDBClient) DeleteItem(ctx context.Context, table string, key map[string]types.AttributeValue) error {
-	input := &dynamodb.DeleteItemInput{
-		TableName: &table,
-		Key:       key,
-	}
-	_, err := db.client.DeleteItem(ctx, input)
-	if err != nil {
-		return fmt.Errorf("error al eliminar item: %w", err)
-	}
-	return nil
-}
-
-type ItemService struct {
-	repository DynamoDBRepository
-}
-
-func NewItemService(repo DynamoDBRepository) *ItemService {
-	return &ItemService{
-		repository: repo,
-	}
-}
-
-func (s *ItemService) CreateItem(ctx context.Context, table string, item map[string]types.AttributeValue) error {
-	return s.repository.PutItem(ctx, table, item)
-}
-
-func (s *ItemService) ReadItem(ctx context.Context, table string, key map[string]types.AttributeValue) (map[string]types.AttributeValue, error) {
-	return s.repository.GetItem(ctx, table, key)
-}
-
-func (s *ItemService) UpdateItem(ctx context.Context, table string, key map[string]types.AttributeValue, updateExpression string, expressionAttributeValues map[string]types.AttributeValue) error {
-	return s.repository.UpdateItem(ctx, table, key, updateExpression, expressionAttributeValues)
-}
-
-func (s *ItemService) DeleteItem(ctx context.Context, table string, key map[string]types.AttributeValue) error {
-	return s.repository.DeleteItem(ctx, table, key)
-}
-
-func (db *DynamoDBClient) GetDBSession() string {
-	return db.client.Options().Region
+	items = append(items, result.Items...)
+	return items, nil
 }
