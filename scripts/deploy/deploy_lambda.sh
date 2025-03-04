@@ -1,4 +1,5 @@
 #!/bin/bash
+
 rm -rf package lambda_package.zip
 mkdir package
 cd ..
@@ -12,5 +13,3 @@ pip install \
 cp -r adapters core ports utils main.py deploy/package/
 cd deploy/package
 zip -r ../lambda_package.zip .
-aws lambda update-function-code --function-name LAMBDA_NAME --zip-file fileb://lambda_package.zip
-echo "Deployment completed"
