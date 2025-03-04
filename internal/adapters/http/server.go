@@ -66,6 +66,10 @@ func (ea *EchoAdapter) Mount(db *db.DynamoDBClient) {
 	componentService := ports.NewComponentService(componentRepo)
 	componentHandler := api.NewComponentHandler(componentService)
 
+	analyticRepo := repositories.NewAnalyticRepository(db)
+	analyticService := ports.NewAnalyticService(analyticRepo)
+	analyticHandler := api.NewAnalyticHandler(analyticService)
+
 	authRepo := auth.NewAuthRepository(userRepo)
 	authService := ports.NewAuthService(authRepo)
 	authHandler := api.NewAuthHandler(authService)
@@ -90,4 +94,9 @@ func (ea *EchoAdapter) Mount(db *db.DynamoDBClient) {
 	v1.POST("/component", componentHandler.RegisterComponent)
 	v1.GET("/component/:id", componentHandler.FindComponent)
 	v1.DELETE("/component/:id", componentHandler.RemoveComponent)
+
+	v1.GET("/analytics", analyticHandler.Analytics)
+	v1.POST("/analytic", analyticHandler.RegisterAnalytic)
+	v1.GET("/analytic/:id", analyticHandler.FindAnalytic)
+	v1.DELETE("/analytic/:id", analyticHandler.RemoveAnalytic)
 }
