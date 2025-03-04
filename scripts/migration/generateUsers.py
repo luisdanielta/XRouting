@@ -1,6 +1,6 @@
 import uuid
 from core.entities.user import User, UserRole
-from adapters.repositories.userRepository import UserRepository
+from core.repositories.userRepository import UserRepository
 
 def generateUsers():
     return [

@@ -41,5 +41,15 @@ def lambda_handler(event: Dict[str, str], context: object) -> Dict[str, str | in
     return saveToDynamoDB(components, comments, subComponents, analytics)
 ```
 
+## 5. Running the Code Locally 🏃
 
+
+
+
+This version ensures that you have clear steps to:
+1. Authenticate with AWS.
+2. Create the necessary DynamoDB tables.
+3. Execute the Lambda function locally.
+
+### To read about the deploymeny docs, please go to [Lambda Deployment Docs](deploy/README.md)
 
