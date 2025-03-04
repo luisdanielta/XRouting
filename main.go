@@ -11,7 +11,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	midd "github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 )
 
@@ -35,7 +35,7 @@ func main() {
 
 	/* Middleware */
 	e.Use(http.DBMiddleware(dbClient))
-	e.Use(middleware.CORS())
+	e.Use(midd.CORS())
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			logger.Infow("request", "method", c.Request().Method, "uri", c.Request().RequestURI)

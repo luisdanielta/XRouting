@@ -6,6 +6,7 @@ import (
 	"time"
 	"xrouting/cmd/api"
 	"xrouting/internal/adapters/db"
+	"xrouting/internal/auth"
 	"xrouting/internal/domain/repositories"
 	"xrouting/internal/ports"
 
@@ -65,10 +66,17 @@ func (ea *EchoAdapter) Mount(db *db.DynamoDBClient) {
 	componentService := ports.NewComponentService(componentRepo)
 	componentHandler := api.NewComponentHandler(componentService)
 
+	authRepo := auth.NewAuthRepository(userRepo)
+	authService := ports.NewAuthService(authRepo)
+	authHandler := api.NewAuthHandler(authService)
+
 	e := ea.echo
 	e.GET("/health", api.GetHealth)
 
 	v1 := e.Group("/api/v1")
+
+	v1.POST("/sign/up", authHandler.SignUp)
+	v1.POST("/sign/in", authHandler.SignIn)
 
 	v1.POST("/user", userHandler.RegisterUser)
 	v1.GET("/user/:id", userHandler.FindUser)

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"xrouting/internal/adapters/db"
 	"xrouting/internal/domain/entities"
 
@@ -12,6 +13,7 @@ type UserRepository interface {
 	CreateUser(ctx context.Context, tableName string, user *entities.User) error
 	GetUser(ctx context.Context, tableName string, userID string) (*entities.User, error)
 	DeleteUser(ctx context.Context, tableName string, userID string) error
+	ListUsers(ctx context.Context, tableName string) ([]*entities.User, error)
 }
 
 type userRepository struct {
@@ -45,4 +47,23 @@ func (r *userRepository) DeleteUser(ctx context.Context, tableName string, userI
 	return r.dynamo.DeleteItem(ctx, tableName, map[string]types.AttributeValue{
 		"id": &types.AttributeValueMemberS{Value: userID},
 	})
+}
+
+func (r *userRepository) ListUsers(ctx context.Context, tableName string) ([]*entities.User, error) {
+	users := make([]*entities.User, 0)
+	items, err := r.dynamo.ScanTable(ctx, tableName)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range items {
+		user := &entities.User{}
+		err = user.Unmarshal(item)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal user: %w", err)
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }
