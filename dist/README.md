@@ -1,8 +1,8 @@
 # AWS ECS Fargate + ECR Deployment
 
 This is a step-by-step instructions to deploy this application to AWS ECS Fargate, using Amazon ECR as the container image repository. It assumes you are using a `dev-user`, IAM user for previusly configured
-
 ---
+
 ## Configure AWS IAM Permissions
 
 Verify permissions: Go to IAM > Users > `dev-user` > Permissions, and add these policies if missing.
@@ -13,6 +13,7 @@ Verify permissions: Go to IAM > Users > `dev-user` > Permissions, and add these 
   - AWSCloudFormationFullAccess → Required if using CloudFormation for setup.
   - IAMFullAccess → Required for creating execution roles.
 ---
+
 ## Push Docker Image to Amazon ECR
 
 #### 1. Authenticate Docker with ECR
@@ -74,8 +75,8 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/xrouting-app:latest
     - Command: `/usr/bin/tini,--,sh,-c,./xrouting\ \&\ npm\ run\ preview`
     - Workdir: `/app`
     - Click Create
-   
 ---
+
 ## Create a VPC with Public & Private Subnets
 
 A VPC (Virtual Private Cloud) is needed, so we have to create one before deploying the ECS service. ECS Fargate requires a VPC with subnets and a security group to function properly.
@@ -108,18 +109,43 @@ A VPC (Virtual Private Cloud) is needed, so we have to create one before deployi
 - Click Create security groups.
 
 ---
+
 ##  Deploy ECS Service
 
-#### 1. Create an ECS Service
-  - Go to ECS > Clusters > xrouting-cluster.
-  - Click Create Service.
-  - Select Launch Type: Fargate.
-  - Choose:
-    - Task Definition: `xrouting-task`
-    - Cluster: `xrouting-cluster`
-    - Service Name: `xrouting-service`
-    - Number of tasks: 1
-  - In Networking:
-    - Select `xrouting-vpc`.
-    - Enable Auto-Assign Public IP.
-    - Click Next and deploy the service.
+- Go to ECS > Clusters > xrouting-cluster.
+- Click Create Service.
+- Select Launch Type: Fargate.
+- Choose:
+  - Task Definition: `xrouting-task`
+  - Cluster: `xrouting-cluster`
+  - Service Name: `xrouting-service`
+  - Number of tasks: 1
+- In Networking:
+  - Select `xrouting-vpc`.
+  - Enable Auto-Assign Public IP.
+  - Click Next and deploy the service.
+
+---
+
+##  Verify & Access the App
+
+- Go to ECS > Clusters > xrouting-cluster > Services.
+- Click on `xrouting-service` and find the `Public IP` of the running task.
+- Open it in a browser:
+```sh
+http://<Public-IP>:8000
+http://<Public-IP>:4173
+```
+
+🔗 Additional Notes
+To deploy a new version, rebuild & push the image, then update the ECS service:
+
+```sh
+docker build -t xrouting-app .
+docker tag xrouting-app:latest <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/xrouting-app:latest
+docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/xrouting-app:latest
+```
+
+Then restart the service in ECS > Services > Update Service. 
+
+Logs & Debugging: Logs are available in CloudWatch > Log Groups > `/ecs/xrouting-service`
