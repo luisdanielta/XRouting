@@ -27,7 +27,7 @@ def detailToComments(launch: LaunchDTO) -> List[Comment]:
     keywords = {
         "rocket": [launch.rocket] if launch.rocket else [],
         "launchpad": [launch.launchpad] if launch.launchpad else [],
-        "core": [core["id"] for core in launch.cores if "id" in core],
+        "core": [core["type"] for core in launch.cores if "type" in core],
         "capsule": launch.capsules or [],
         "ship": launch.ships or [],
     }
