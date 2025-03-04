@@ -1,5 +1,5 @@
 from core.entities.comment import Comment
-from adapters.repositories.baseRepository import BaseRepository
+from core.repositories.baseRepository import BaseRepository
 
 class CommentRepository(BaseRepository[Comment]):
     def __init__(self, regionName="us-east-1"):
