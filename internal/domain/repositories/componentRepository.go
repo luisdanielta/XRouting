@@ -12,6 +12,7 @@ type ComponentRepository interface {
 	CreateComponent(ctx context.Context, tableName string, component *entities.Component) error
 	GetComponent(ctx context.Context, tableName string, componentID string) (*entities.Component, error)
 	DeleteComponent(ctx context.Context, tableName string, componentID string) error
+	ListComponents(ctx context.Context, tableName string) ([]*entities.Component, error)
 }
 
 type componentRepository struct {
@@ -44,4 +45,22 @@ func (r *componentRepository) DeleteComponent(ctx context.Context, tableName str
 	return r.dynamo.DeleteItem(ctx, tableName, map[string]types.AttributeValue{
 		"componentId": &types.AttributeValueMemberS{Value: componentID},
 	})
+}
+
+func (r *componentRepository) ListComponents(ctx context.Context, tableName string) ([]*entities.Component, error) {
+	components := make([]*entities.Component, 0)
+	items, err := r.dynamo.ScanTable(ctx, tableName)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range items {
+		component := &entities.Component{}
+		err = component.Unmarshal(item)
+		if err != nil {
+			return nil, err
+		}
+		components = append(components, component)
+	}
+	return components, nil
 }

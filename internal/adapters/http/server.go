@@ -78,6 +78,7 @@ func (ea *EchoAdapter) Mount(db *db.DynamoDBClient) {
 	v1.GET("/comment/:id", commentHandler.FindComment)
 	v1.DELETE("/comment/:id", commentHandler.RemoveComment)
 
+	v1.GET("/components", componentHandler.Components)
 	v1.POST("/component", componentHandler.RegisterComponent)
 	v1.GET("/component/:id", componentHandler.FindComponent)
 	v1.DELETE("/component/:id", componentHandler.RemoveComponent)

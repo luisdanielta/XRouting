@@ -27,6 +27,7 @@ type DynamoDBRepository interface {
 		updateExpression string,
 		expressionValues map[string]types.AttributeValue,
 	) error
+	ScanTable(ctx context.Context, tableName string) ([]map[string]types.AttributeValue, error)
 }
 
 // DynamoDBClient implements the DynamoDBRepository interface.
@@ -96,4 +97,19 @@ func (c *DynamoDBClient) UpdateItem(
 		ExpressionAttributeValues: expressionValues,
 	})
 	return err
+}
+
+func (c *DynamoDBClient) ScanTable(ctx context.Context, tableName string) ([]map[string]types.AttributeValue, error) {
+	var items []map[string]types.AttributeValue
+	input := &dynamodb.ScanInput{
+		TableName: &tableName,
+	}
+
+	result, err := c.client.Scan(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	items = append(items, result.Items...)
+	return items, nil
 }

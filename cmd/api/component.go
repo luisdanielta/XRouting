@@ -58,3 +58,14 @@ func (h *ComponentHandler) RemoveComponent(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "Component removed successfully"})
 }
+
+func (h *ComponentHandler) Components(c echo.Context) error {
+	tableName := "components"
+
+	components, err := h.componentService.Components(c.Request().Context(), tableName)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, components)
+}
