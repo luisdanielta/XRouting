@@ -32,7 +32,7 @@ To get started:
 This will set up:
 
 - The Go backend.
-- The Go frontend.
+- The React frontend.
 - The Python Lambda function.
 
 ⚠️ If you prefer a manual setup, refer to the specific README files inside each module.
@@ -45,6 +45,6 @@ Each module has its own README with detailed instructions:
 - Lambda Function → [Lambda Function Overview](scripts/README.md)
 - DB setup  →  [DynamoDB config](scripts/adapters/db/README.md)
 - Deployment Setup → [Lambda Deploy](scripts/deploy/README.md) / [Web Deploy](dist/README.md)  
-- Web App (Go) → [Web App](web/README.md)
+- Web App (Go/React) → [Web App](web/README.md)
 
 For more details on how each component works, refer to the respective module documentation.
