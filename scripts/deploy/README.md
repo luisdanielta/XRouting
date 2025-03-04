@@ -40,6 +40,26 @@ aws iam attach-role-policy --role-name LambdaExecutionRole --policy-arn arn:aws:
 aws iam attach-role-policy --role-name LambdaExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 ```
 
+#### 3. Package the Lambda Function
+Run the `deploy_lambda.sh` to install dependencies and package the Lambda function, you can also follow the step by step commands.
+
+#### 4. Deploy the Lambda Function
+
+```bash
+aws lambda create-function \
+  --function-name updateSpaceXData \
+  --runtime python3.12 \
+  --role arn:aws:iam::YOUR_ACCOUNT_ID:role/LambdaExecutionRole \
+  --handler main.lambda_handler \
+  --zip-file fileb://lambda_package.zip
+```
+
+This command creates an AWS Lambda function named updateSpaceXData. It assigns the LambdaExecutionRole with the necessary permissions, and sets main.lambda_handler as the entry point. Additionally, it uploads the packaged code from lambda_package.zip, making the function ready for execution in AWS.
+
+- YOUR_ACCOUNT_ID
+```bash
+aws sts get-caller-identity --query Account --output text
+```
 
 
 
