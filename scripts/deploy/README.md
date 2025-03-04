@@ -17,15 +17,15 @@ Enter your AWS Access Key ID, Secret Access Key, Region.
 
 If you don’t have an AWS user for using credentials, go to the AWS IAM Console:
 
-##### Create a new user
+#### 1. Create a new user
 * Click Add user → Set a username (e.g., dev-user).
 * Choose Access Key – Programmatic access.
 
-##### Assign permissions
+#### 2. Assign permissions
 * Select Attach policies directly.
 * Add the following policy: IAMFullAccess (if full access is needed but I personally do not recommend) or create a custom policy (see next step).
 
-##### Download credentials
+#### 3. Download credentials
 * Save the Access Key ID and Secret Access Key.
 
 #### 2. IAM Role with Lambda Execution Permissions.
@@ -56,7 +56,7 @@ aws lambda create-function \
 
 This command creates an AWS Lambda function named updateSpaceXData. It assigns the LambdaExecutionRole with the necessary permissions, and sets main.lambda_handler as the entry point. Additionally, it uploads the packaged code from lambda_package.zip, making the function ready for execution in AWS.
 
-- YOUR_ACCOUNT_ID
+**Get YOUR_ACCOUNT_ID**
 ```bash
 aws sts get-caller-identity --query Account --output text
 ```
