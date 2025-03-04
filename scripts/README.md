@@ -51,12 +51,14 @@ def lambda_handler(event: Dict[str, str], context: object) -> Dict[str, str | in
         - AWSLambdaBasicExecutionRole
 
 **1. Create DynamoDB Tables**
+
 Before running the Lambda function, you need to create the necessary DynamoDB tables. This can be done by running the migration script:
 ```python
 python migration/create_tables.py
 ```
 
 **2. Run the Lambda Function Locally**
+
 Once the tables are set up, you can run the Lambda function directly, `python main.py`. This will:
 - Fetch data from the SpaceX API.
 - Process and transform the data.
