@@ -1,20 +1,18 @@
-import { flexRender } from "@tanstack/react-table";
-import { useComponentTable } from "@/hooks/useComponentTable";
-import { Component } from "@/domain/entities/component";
+import { flexRender,  } from "@tanstack/react-table";
 import PrimaryButton from "../ui/button/primaryButton";
+import { Key } from "react";
 
-interface UserTableProps {
-  data: Component[];
+interface TableProps {
+  table?: any | null;
 }
 
-export const ComponentTable: React.FC<UserTableProps> = ({ data }) => {
-  const table = useComponentTable(data);
+export const Table: React.FC<TableProps> = ({ table }) => {
 
   return (
-    <div className="overflow-hidden rounded-md border border-gray-200 shadow-md shadow-gray-100">
+    <div className="overflow-hidden rounded-sm border border-gray-200 shadow-md shadow-gray-100">
       <table className="w-full table-fixed border-collapse">
         <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {table.getHeaderGroups().map((headerGroup: { id: Key | null | undefined; headers: any[]; }) => (
             <tr key={headerGroup.id} className="bg-gradient-to-r from-blue-400 via-green-300 to-green-400 text-white">
               {headerGroup.headers.map((header) => (
                 <th
@@ -30,7 +28,7 @@ export const ComponentTable: React.FC<UserTableProps> = ({ data }) => {
           ))}
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {table.getRowModel().rows.map((row) => (
+          {table.getRowModel().rows.map((row: { id: Key | null | undefined; getVisibleCells: () => any[]; }) => (
             <tr key={row.id} className="hover:bg-gray-100 transition-colors">
               {row.getVisibleCells().map((cell) => (
                 <td
