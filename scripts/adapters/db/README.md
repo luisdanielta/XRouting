@@ -1,6 +1,6 @@
 # DynamoDB Setup & AWS User Configuration
 
-This document explains how to **set up an AWS IAM user**, grant the necessary permissions, and create the required DynamoDB tables.
+This document explains how to **set up an AWS IAM user**, grant the necessary permissions, and create the required DynamoDB tables. If you already have a user with the required permisisions, just go to Step 3.
 
 ---
 
@@ -50,8 +50,7 @@ This class is responsible for:
 - Creating the table if it does not exist, using the specified primary key schema.
 - Waiting for the table to become fully available before proceeding.
 
----
-**How It Works**
+#### **How It Works**
 
 The `DynamoDBManager` class initializes an AWS DynamoDB client using boto3, which requires valid AWS credentials. The credentials are provided through aws configure or environment variables.
 - `boto3.client("dynamodb")` creates a low-level connection to DynamoDB.
@@ -59,23 +58,35 @@ The `DynamoDBManager` class initializes an AWS DynamoDB client using boto3, whic
 - The region (us-east-1) ensures the database is created in the correct AWS data center.
 
 --- 
-**Primary Key Setup**
+#### **Primary Key Setup**
 
 DynamoDB tables need a primary key for uniquely identifying each item. This includes:
 
-Partition Key (Primary Key) – Uniquely identifies each record.
-
-(Optional) Sort Key – Used for composite primary keys.
-
-The table creation method in DynamoDBManager defines these keys dynamically using the schemas defined on the [Entities](../../core/entities/). 
+- Partition Key (Primary Key) – Uniquely identifies each record.
+- (Optional) Sort Key – Used for composite primary keys.
+- The table creation method in DynamoDBManager defines these keys dynamically using the schemas defined on the [Entities](../../core/entities/). 
 
 Each Entity represents a table on DynamoDB
 
 ---
-**How to Create the Tables**
+## Step 5: Migration
+
+#### **How to Create the Tables**
 
 To execute the table creation process, simply run:
 
 ```python
-python migration/create_tables.py
+python scripts/migration/create_tables.py
+```
+---
+#### **How to Migrate Data**
+
+```python
+python scripts/migration/generateUsers.py
+python scripts/migration/insert.py
+python scripts/migration/insertAnalitics.py
+```
+Running the Lambda will also populate data on DynamoDB
+```python
+python scripts/main.py
 ```
