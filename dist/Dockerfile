@@ -22,4 +22,8 @@ RUN npm run build
 
 RUN apt-get update && apt-get install -y tini
 
+ENV AWS_ACCESS_KEY_ID=""
+ENV AWS_SECRET_ACCESS_KEY=""
+ENV AWS_REGION=""
+
 CMD ["sh", "-c", "/usr/bin/tini -- sh -c './xrouting & npm run preview'"]
