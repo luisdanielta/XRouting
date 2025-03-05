@@ -1,9 +1,9 @@
-from adapters.repositories.componentRepository import ComponentRepository
-from adapters.repositories.subComponentRepository import SubComponentRepository
-from adapters.repositories.commentsRepository import CommentRepository
-from adapters.repositories.maintenanceRepository import MaintenanceRepository
-from adapters.repositories.analyticRepository import AnalyticRepository
-from adapters.repositories.userRepository import UserRepository
+from core.repositories.componentRepository import ComponentRepository
+from core.repositories.subComponentRepository import SubComponentRepository
+from core.repositories.commentsRepository import CommentRepository
+from core.repositories.maintenanceRepository import MaintenanceRepository
+from core.repositories.analyticRepository import AnalyticRepository
+from core.repositories.userRepository import UserRepository
 
 
 def createTables():

@@ -126,7 +126,7 @@ def saveToDynamoDB(
         logger.debug(f"Failed to save data: {e}")
         return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
 
-def lambdaHandler(event: Dict[str, str], context: object) -> Dict[str, str | int]:
+def lambda_handler(event: Dict[str, str], context: object) -> Dict[str, str | int]:
     logger.debug("Fetching SpaceX data...")
     spaceXData = fetchSpaceXData()
 
@@ -138,5 +138,5 @@ def lambdaHandler(event: Dict[str, str], context: object) -> Dict[str, str | int
 
 if __name__ == "__main__":
     print("Running locally...")
-    response = lambdaHandler({}, {})
+    response = lambda_handler({}, {})
     print(json.dumps(response, indent=4))
