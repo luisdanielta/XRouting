@@ -48,3 +48,20 @@ Each module has its own README with detailed instructions:
 - Web App (Go/React) → [Web App](web/README.md)
 
 For more details on how each component works, refer to the respective module documentation.
+
+## Run Locally with Docker
+To run the entire system locally using Docker, follow these steps:
+
+- Complete the setup in [DynamoDB config](scripts/adapters/db/README.md) to create a development user with the required permissions for Lambda and DynamoDB.
+- Extract the necessary AWS credentials for execution.
+- Run the migration scripts to create tables and insert initial data.
+- Once these steps are done, you can start the application with:
+```sh
+docker run --rm -it -p 8000:8000 -p 4173:4173 \
+  -e AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY" \
+  -e AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY" \
+  -e AWS_REGION="YOUR_REGION" \
+  taluisdaniel/xrouting
+
+```
+⚠️ **Note**: If the migration is not executed, the database will be empty, and no data will be available in the app.
